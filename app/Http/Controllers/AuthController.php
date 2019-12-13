@@ -4,12 +4,19 @@ namespace App\Http\Controllers;
 
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth:api')->only('logout');
+    }
+
     public function register(Request $request)
     {
         //验证注册字段
@@ -42,8 +49,19 @@ class AuthController extends Controller
         $user = User::where('email',$email)->first();
         //校验成功返回 Token 信息
         if ($user && Hash::check($password, $user->password)){
+            $user->api_token = Str::random(60);
+            $user->save();
             return response()->json(['user'=>$user, 'success'=>true]);
         }
         return response()->json(['success'=>false]);
+    }
+
+    public function logout(Request $request)
+    {
+        $user = Auth::guard('auth:api')->user();
+        $userModel = User::find($user->id);
+        $userModel->api_token = null;
+        $userModel->save();
+        return response()->json(['success'=>true]);
     }
 }

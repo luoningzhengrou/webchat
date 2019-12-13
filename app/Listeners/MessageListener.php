@@ -33,7 +33,7 @@ class MessageListener extends Listener
             $message->save();
             Log::info(__CLASS__ . ': 处理完毕');
         }else{
-            Log::info(__CLASS__ . ': 消息字段缺失，无法保存');
+            Log::info(__CLASS__ . ': 消息字ewe段缺失，无法保存');
         }
     }
 }

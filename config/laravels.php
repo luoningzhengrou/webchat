@@ -20,8 +20,8 @@ return [
     ],
     'event_handlers'           => [],
     'websocket'                => [
-        'enable' => false,
-        //'handler' => XxxWebSocketHandler::class,
+        'enable' => true,
+        'handler' => \App\Services\WebSocket\WebSocketHandler::class,
     ],
     'sockets'                  => [],
     'processes'                => [
@@ -43,7 +43,11 @@ return [
         ],
         'max_wait_time' => 5,
     ],
-    'events'                   => [],
+    'events'                   => [
+        \App\Events\MessageReceived::class => [
+            \App\Listeners\MessageListener::class,
+        ]
+    ],
     'swoole_tables'            => [],
     'register_providers'       => [],
     'cleaners'                 => [
@@ -71,7 +75,7 @@ return [
         'dispatch_mode'      => 2,
         'reactor_num'        => function_exists('swoole_cpu_num') ? swoole_cpu_num() * 2 : 4,
         'worker_num'         => function_exists('swoole_cpu_num') ? swoole_cpu_num() * 2 : 8,
-        //'task_worker_num'    => function_exists('swoole_cpu_num') ? swoole_cpu_num() * 2 : 8,
+        'task_worker_num'    => function_exists('swoole_cpu_num') ? swoole_cpu_num() * 2 : 8,
         'task_ipc_mode'      => 1,
         'task_max_request'   => 8000,
         'task_tmpdir'        => @is_writable('/dev/shm/') ? '/dev/shm' : '/tmp',
@@ -89,6 +93,8 @@ return [
         'enable_reuse_port'  => true,
         'enable_coroutine'   => false,
         'http_compression'   => false,
+        'heartbeat_idle_time' => 600,
+        'heartbeat_check_interval' => 60,
 
         // Slow log
         // 'request_slowlog_timeout' => 2,
